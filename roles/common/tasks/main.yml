@@ -10,8 +10,8 @@
     - dependencies
 
 - name: Install necessities and nice-to-haves
-  apt: pkg={{ item }} state=present
-  with_items:
+  ansible.builtin.apt:
+    pkg:
     - apache2
     - apt-transport-https
     - apticron
@@ -30,6 +30,10 @@
     - unattended-upgrades
     - vim
     - zsh
+    - acl
+    - php
+    - libapache2-mod-php7.4
+    - php-pgsql
   tags:
     - dependencies
 

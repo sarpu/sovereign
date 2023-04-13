@@ -3,11 +3,10 @@
     name: ssl-cert
     state: present
 
-- name: Download LetsEncrypt release
-  git: repo=https://github.com/letsencrypt/letsencrypt
-       dest=/root/letsencrypt
-       version=master
-       force=yes
+- name: Install certbot
+  ansible.builtin.apt:
+    name: certbot
+    state: present
 
 - name: Create directory for LetsEncrypt configuration and certificates
   file: state=directory path=/etc/letsencrypt group=root owner=root
@@ -15,14 +14,24 @@
 - name: Configure LetsEncrypt
   template:
     src=etc_letsencrypt_cli.conf.j2
-    dest=/etc/letsencrypt/cli.conf
+    dest=/etc/letsencrypt/cli.ini
     owner=root
     group=root
 
-- name: Install LetsEncrypt package dependencies
-  command: /root/letsencrypt/letsencrypt-auto --help
-  register: le_deps_result
-  changed_when: "'Bootstrapping dependencies' in le_deps_result.stdout"
+
+## DEBUG TASK
+
+    #- name: Debug the le_deps_result
+    #  ansible.builtin.debug:
+    #    var: le_deps_result
+    #
+    #- name: Just exit
+    #  ansible.builtin.fail:
+    #    msg: ugh
+    #
+## DEBUG TASK 
+
+
 
 - name: Create directory for pre-renewal scripts
   file: state=directory path=/etc/letsencrypt/prerenew group=root owner=root

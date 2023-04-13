@@ -2,11 +2,11 @@
 # Defines tasks applicable for Google Authenticator.
 
 - name: Ensure required packages are installed
-  apt: pkg={{ item }} state=present
-  with_items:
+  ansible.builtin.apt:
+    pkg:
     - libpam-google-authenticator
     - libpam0g-dev
-    - libqrencode3
+    - libqrencode4
   tags:
     - dependencies
 
