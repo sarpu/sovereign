@@ -2,10 +2,10 @@
 # Defines tasks applicable for postgreSQL
 
 - name: Install Postgres
-  apt: pkg={{ item }} state=present
-  with_items:
+  ansible.builtin.apt:
+    pkg:
     - postgresql
-    - python-psycopg2
+    - python3-psycopg2
   tags:
     - dependencies
 
