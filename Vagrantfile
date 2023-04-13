@@ -6,8 +6,9 @@ Vagrant.configure('2') do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     apt-get install -y \
-      python \
-      python-apt
+      python3 \
+      python3-apt \
+      python-apt-common
   SHELL
 
   config.vm.provision :ansible do |ansible|
@@ -15,12 +16,12 @@ Vagrant.configure('2') do |config|
     ansible.host_key_checking = false
     ansible.extra_vars = { ansible_ssh_user: 'vagrant', testing: true }
     ansible.groups = {
-      "testing" => ["jessie", "xenial"]
+      "testing" => ["bullseye", "xenial"]
     }
 
     # ansible.tags = ['blog']
     # ansible.skip_tags = ['openvpn']
-    # ansible.verbose = 'vvvv'
+    #ansible.verbose = 'vvvv'
   end
 
   config.vm.provider :virtualbox do |v|
@@ -41,8 +42,8 @@ Vagrant.configure('2') do |config|
   end
 
   # Debian 8 64-bit (officially supported)
-  config.vm.define 'jessie', primary: true do |jessie|
-    jessie.vm.box = 'debian/contrib-jessie64'
+  config.vm.define 'bullseye', primary: true do |bullseye|
+    bullseye.vm.box = 'debian/bullseye64'
   end
 
   # Ubuntu 16.04 (LTS) 64-bit (currently unavailable)
