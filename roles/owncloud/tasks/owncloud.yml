@@ -2,10 +2,18 @@
 # Installs the ownCloud personal cloud software.
 
 - name: Install ownCloud dependencies
-  apt: pkg={{ item }} state=present
-  with_items:
+  ansible.builtin.apt:
+    pkg:
     - postgresql
-    - python-psycopg2
+    - python3-psycopg2
+    - php7.4-zip
+    - php7.4-xml
+    - php7.4-intl
+    - php7.4-mbstring
+    - php7.4-gd
+    - php7.4-xsl
+    - php7.4-curl
+
   tags:
     - dependencies
 
@@ -23,20 +31,28 @@
     password="{{ owncloud_db_password }}"
     role_attr_flags=CREATEDB state=present
 
+
 - name: Ensure repository key for ownCloud is in place
-  apt_key: url=https://download.owncloud.org/download/repositories/stable/Debian_8.0/Release.key state=present
-  tags:
+  become: true
+  ansible.builtin.shell:
+    cmd: |
+      echo 'deb http://download.opensuse.org/repositories/isv:/ownCloud:/server:/10/Debian_10/ /' | 
+      tee /etc/apt/sources.list.d/isv:ownCloud:server:10.list
+      curl -fsSL https://download.opensuse.org/repositories/isv:ownCloud:server:10/Debian_10/Release.key | 
+      gpg --dearmor | 
+      tee /etc/apt/trusted.gpg.d/isv_ownCloud_server_10.gpg > /dev/null
+  tags: 
     - dependencies
 
-- name: Add ownCloud repository
-  apt_repository: repo='deb http://download.owncloud.org/download/repositories/stable/Debian_8.0/ /'
-  tags:
-    - dependencies
 
-- name: Install ownCloud
-  apt: pkg=owncloud-files update_cache=yes
-  tags:
-    - dependencies
+
+- name: Install owncloud
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+      - owncloud-complete-files
+
+
 
 - name: Ensure ownCloud directory is in place
   file: state=directory path=/var/www/owncloud
